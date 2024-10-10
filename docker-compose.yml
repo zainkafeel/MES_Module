@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    container_name: mes_module_db
+    environment:
+      POSTGRES_USER: your_user        # Replace with your PostgreSQL username
+      POSTGRES_PASSWORD: your_password  # Replace with your PostgreSQL password
+      POSTGRES_DB: mes_module          # Database name
+    ports:
+      - "5432:5432"                    # Expose PostgreSQL port
+    volumes:
+      - db_data:/var/lib/postgresql/data  # Persist data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mes_module_backend
+    ports:
+      - "3000:3000"                    # Expose backend port
+    environment:
+      PGUSER: your_user                # Replace with your PostgreSQL username
+      PGPASSWORD: your_password         # Replace with your PostgreSQL password
+      PGHOST: db                        # Hostname for the database
+      PGDATABASE: mes_module            # Database name
+      PGPORT: 5432                      # PostgreSQL port
+    depends_on:
+      - db                              # Ensure db service starts before backend
+
+volumes:
+  db_data:                              # Named volume for PostgreSQL data persistence
